@@ -1,0 +1,14 @@
+start -> E
+
+E -> E '+' T
+E -> E '-' T
+E -> T
+
+T -> T '*' P
+T -> T '/' P
+T -> P
+
+P -> NUMBER
+P -> VAR
+P -> '(' E ')'
+
