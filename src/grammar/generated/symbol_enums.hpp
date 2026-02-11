@@ -1,4 +1,4 @@
-// Автоматически сгенерировано из ../data/grammar.txt
+// Сгенерировано из ../data/grammar.txt
 #ifndef SYMBOL_ENUMS_HPP
 #define SYMBOL_ENUMS_HPP
 

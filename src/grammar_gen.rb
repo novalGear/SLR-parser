@@ -15,7 +15,8 @@ start_symbol = nil
 in_terminals = false
 
 File.readlines(GRAMMAR_FILE).each do |line|
-  line = line.strip
+  # Удаляем \r для совместимости с Windows-редакторами
+  line = line.chomp("\r\n").chomp("\n")
   next if line.empty? || line.start_with?('#')
 
   if line.start_with?('%terminals')
@@ -35,7 +36,8 @@ File.readlines(GRAMMAR_FILE).each do |line|
     next if line.empty?
     if line.include?(':')
       lit, name = line.split(':', 2).map(&:strip)
-      lit = lit.gsub(/^['"]|['"]$/, '')
+      # Удаляем кавычки вокруг литерала
+      lit = lit.gsub(/\A['"]|['"]\z/, '')
       terminals_map[lit] = name.to_sym
     end
   else
@@ -46,30 +48,26 @@ File.readlines(GRAMMAR_FILE).each do |line|
   end
 end
 
-# Определяем нетерминалы
+# Нетерминалы
 nonterminals = rules.map(&:first).uniq
 nonterminals << start_symbol unless start_symbol.nil? || nonterminals.include?(start_symbol)
 nonterminals.sort!
 terminal_enums = terminals_map.values
 
-# Если %start не задан — берём первый нетерминал
 if start_symbol.nil?
   start_symbol = nonterminals.first
   warn "Не указан %start — используем: #{start_symbol}"
 end
 
-# Формируем полный список символов: сначала нетерминалы, потом терминалы, потом END_MARKER
 all_symbols = nonterminals.map(&:upcase) + terminal_enums + [:END_MARKER]
 symbol_count = all_symbols.size
 nt_count = nonterminals.size
 t_count = terminal_enums.size + 1
 
-# Массив имён для SYMBOL_NAMES
+# --- symbol_enums.hpp ---
 names_str = all_symbols.map { |s| "\"#{s}\"" }.join(", ")
-
-# --- Генерация symbol_enums.hpp ---
-hpp_content = [
-  "// Автоматически сгенерировано из #{GRAMMAR_FILE}",
+File.write("#{GEN_DIR}/symbol_enums.hpp", [
+  "// Сгенерировано из #{GRAMMAR_FILE}",
   "#ifndef SYMBOL_ENUMS_HPP",
   "#define SYMBOL_ENUMS_HPP",
   "",
@@ -90,7 +88,45 @@ hpp_content = [
   "};",
   "",
   "#endif // SYMBOL_ENUMS_HPP"
-].join("\n")
+].join("\n"))
 
-File.write("#{GEN_DIR}/symbol_enums.hpp", hpp_content)
-puts "Сгенерировано: #{GEN_DIR}/symbol_enums.hpp"
+# --- grammar_rules.cpp ---
+rhs_arrays = []
+rule_inits = []
+
+rules.each_with_index do |(lhs, rhs_tokens), idx|
+  rhs_symbols = rhs_tokens.map do |tok|
+    clean_tok = tok.gsub(/\A['"]|['"]\z/, '')
+    if terminals_map.key?(clean_tok)
+      terminals_map[clean_tok]
+    elsif nonterminals.include?(tok)
+      tok.upcase.to_sym
+    else
+      raise "Неизвестный символ в правиле: '#{tok}' (очищено: '#{clean_tok}')\n" \
+            "Правило: #{lhs} -> #{rhs_tokens.join(' ')}"
+    end
+  end
+
+  array_name = "RHS_#{idx}"
+  rhs_arrays << "static constexpr Symbol #{array_name}[] = { #{rhs_symbols.map { |s| "Symbol::#{s}" }.join(', ')} };"
+  rule_inits << "  {#{idx}, Symbol::#{lhs.upcase}, #{array_name}, #{rhs_symbols.size}}"
+end
+
+File.write("#{GEN_DIR}/grammar_rules.cpp", [
+  "// Сгенерировано из #{GRAMMAR_FILE}",
+  '#include "grammar/rule.hpp"',
+  "",
+  *rhs_arrays,
+  "",
+  "const Rule GRAMMAR_RULES_ARRAY[] = {",
+  rule_inits.join(",\n"),
+  "};",
+  "",
+  "const Rule* GRAMMAR_RULES = GRAMMAR_RULES_ARRAY;",
+  "const std::size_t GRAMMAR_RULES_COUNT = #{rules.size};",
+  ""
+].join("\n"))
+
+puts "Сгенерировано:"
+puts "  #{GEN_DIR}/symbol_enums.hpp"
+puts "  #{GEN_DIR}/grammar_rules.cpp"
