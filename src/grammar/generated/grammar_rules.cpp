@@ -1,5 +1,5 @@
 // Сгенерировано из ../data/grammar.txt
-#include "grammar/rule.hpp"
+#include "../rule.hpp"
 
 static constexpr Symbol RHS_0[] = { Symbol::E };
 static constexpr Symbol RHS_1[] = { Symbol::E, Symbol::PLUS, Symbol::T };
