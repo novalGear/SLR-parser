@@ -114,7 +114,7 @@ end
 
 File.write("#{GEN_DIR}/grammar_rules.cpp", [
   "// Сгенерировано из #{GRAMMAR_FILE}",
-  '#include "grammar/rule.hpp"',
+  '#include "../rule.hpp"',
   "",
   *rhs_arrays,
   "",
@@ -122,8 +122,8 @@ File.write("#{GEN_DIR}/grammar_rules.cpp", [
   rule_inits.join(",\n"),
   "};",
   "",
-  "const Rule* GRAMMAR_RULES = GRAMMAR_RULES_ARRAY;",
-  "const std::size_t GRAMMAR_RULES_COUNT = #{rules.size};",
+  "const Rule* const GRAMMAR_RULES = GRAMMAR_RULES_ARRAY;",
+  "const std::size_t GRAMMAR_RULES_COUNT = sizeof(GRAMMAR_RULES_ARRAY) / sizeof(Rule);",
   ""
 ].join("\n"))
 

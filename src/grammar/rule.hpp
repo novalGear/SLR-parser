@@ -10,5 +10,5 @@ struct Rule {
     std::size_t length;         // размер правой части
 };
 
-extern constexpr Rule* GRAMMAR_RULES;
+extern const Rule* const GRAMMAR_RULES;
 extern const std::size_t GRAMMAR_RULES_COUNT;

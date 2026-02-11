@@ -25,5 +25,5 @@ const Rule GRAMMAR_RULES_ARRAY[] = {
   {9, Symbol::P, RHS_9, 3}
 };
 
-const Rule* GRAMMAR_RULES = GRAMMAR_RULES_ARRAY;
-const std::size_t GRAMMAR_RULES_COUNT = 10;
+const Rule* const GRAMMAR_RULES = GRAMMAR_RULES_ARRAY;
+const std::size_t GRAMMAR_RULES_COUNT = sizeof(GRAMMAR_RULES_ARRAY) / sizeof(Rule);
