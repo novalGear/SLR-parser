@@ -8,19 +8,17 @@
 
 using SymbolSet = std::set<Symbol>;
 
-// FIRST для всех символов
-std::array<SymbolSet, SYMBOL_COUNT> first;
-
-// FOLLOW множества для нетерминалов
-std::array<SymbolSet, NONTERMINAL_COUNT> follow;
-
-bool add_all(SymbolSet& destination, const SymbolSet& source) {
+bool
+add_all(SymbolSet& destination,
+        const SymbolSet& source) {
     size_t before = destination.size();
     destination.insert(source.begin(), source.end());
     return destination.size() > before;
 }
 
-void create_first_set() {
+FirstSet create_first_set() {
+    // FIRST для всех символов
+    FirstSet first;
     // Инициализация терминалов
     for (size_t i = NONTERMINAL_COUNT; i < SYMBOL_COUNT; ++i) {
         first[i].insert(static_cast<Symbol>(i));
@@ -44,7 +42,7 @@ void create_first_set() {
     }
 }
 
-void create_follow_set() {
+FollowSet create_follow_set(FirstSet first) {
 
     // Инициализация follow
     for (auto& s : follow) s.clear();
@@ -81,7 +79,7 @@ void create_follow_set() {
 }
 
 
-void print_first_follow() {
+void print_first_follow(FirstSet first, FollowSet follow) {
     std::cout << "=== FIRST sets ===\n";
     for (size_t i = 0; i < NONTERMINAL_COUNT; ++i) {
         Symbol nt = static_cast<Symbol>(i);

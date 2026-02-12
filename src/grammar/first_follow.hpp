@@ -7,11 +7,11 @@
 
 using SymbolSet = std::set<Symbol>;
 
-extern std::array<SymbolSet, SYMBOL_COUNT> first;
-extern std::array<SymbolSet, NONTERMINAL_COUNT> follow;
+using FirstSet  = std::array<SymbolSet, SYMBOL_COUNT>;
+using FollowSet = std::array<SymbolSet, NONTERMINAL_COUNT>;
 
-void create_first_set();
-void create_follow_set();
-void print_first_follow(); // для отладки
+FirstSet create_first_set();
+FollowSet create_follow_set(FirstSet first);
+void print_first_follow(FirstSet first, FollowSet follow); // для отладки
 
 #endif
