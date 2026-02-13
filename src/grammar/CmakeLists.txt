@@ -7,7 +7,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(grammar_test
     main.cpp
     first_follow.cpp
+    items.cpp
+    slr_parser.cpp
     symbol_utils.cpp
+    table_builder.cpp
     generated/grammar_rules.cpp
 )
 
@@ -15,3 +18,5 @@ target_include_directories(grammar_test PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/generated
 )
+
+target_compile_definitions(grammar_test PRIVATE $<$<CONFIG:Debug>:DEBUG>)

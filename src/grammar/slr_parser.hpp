@@ -21,7 +21,7 @@ enum class ActionType {
 struct Action {
     ActionType type;
     // SHIFT: номер состояния, REDUCE: номер грамматического правила
-    size_t value;
+    int value;
 };
 
 struct State {
@@ -38,14 +38,14 @@ using GotoTable = std::vector<std::vector<int>>;
 
 class SLR_Parser {
 public:
-    SLR_Parser();
+    SLR_Parser() = default;
 
     // построение таблиц
     int init();
 
     // интерфейс парсера
-    // const Action& get_action(int state, Symbol terminal) const;
-    // int get_goto(int state, Symbol nonterminal) const;
+    const Action& get_action(size_t state, Symbol terminal) const;
+    int get_goto(size_t state, Symbol nonterminal) const;
 
     // debug
     // SLR_Error get_last_error();
@@ -56,7 +56,7 @@ private:
     // стэк состояний
     // входная строка
     //
-    std::vector<State> states_;
+    // std::vector<State> states_;
     ActionTable action_table_;
     GotoTable   goto_table_;
 

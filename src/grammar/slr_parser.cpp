@@ -1,4 +1,5 @@
 #include "slr_parser.hpp"
+#include "symbol_utils.hpp"
 #include "table_builder.hpp"
 #include "first_follow.hpp"
 
@@ -13,9 +14,9 @@ int SLR_Parser::build_tables() {
     print_first_follow(first, follow_sets);
 
     TableBuilder builder;
-    builder.build(first, follow_sets);
+    builder.build(follow_sets);
 
-    states_         = builder.take_states();
+    // states_         = builder.take_states();
     action_table_   = builder.take_action_table();
     goto_table_     = builder.take_goto_table();
     return 0;

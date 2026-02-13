@@ -25,3 +25,6 @@ ItemSet compute_initial_items_set();
 
 ItemSet closure(const ItemSet& I);
 ItemSet goto_items(const ItemSet& I, Symbol X);
+
+// отладка
+void print_item(const Item& item);

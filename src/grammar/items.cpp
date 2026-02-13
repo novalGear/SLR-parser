@@ -1,5 +1,8 @@
 #include "item.hpp"
 #include "rule.hpp"
+#include "symbol_utils.hpp"
+
+#include <iostream>
 
 Symbol symbol_after_dot(const Item& item) {
     const Rule& rule = GRAMMAR_RULES[item.rule_id];
@@ -29,36 +32,42 @@ ItemSet closure(const ItemSet& I) {
     bool changed = true;
     while(changed) {
         changed = false;
+        ItemSet new_items;
         for (const Item& item: result) {
-            Symbol sym = symbol_after_dot(item);
-            if (not is_terminal(sym)) {
-                // Раскрываем нетерминалы X, добавляя правила
-                // вида X -> . ... (с точкой в начале)
-                for (size_t rule_ind = 0; rule_ind < GRAMMAR_RULES_COUNT; ++rule_ind) {
-                    if (GRAMMAR_RULES[rule_ind].lhs == sym) {
-                        Item new_item{rule_ind, 0};
-                        // добавляем и с нетерминалами в начале, эти пункты
-                        // замыкаются на следующих итерациях
-                        if (result.insert(new_item).second) {
-                            changed = true;
+            if (!is_complete(item)) {
+                Symbol next_symbol = symbol_after_dot(item);
+                if (not is_terminal(next_symbol)) {
+                    // Раскрываем нетерминалы X, добавляя правила
+                    // вида X -> . ... (с точкой в начале)
+                    for (size_t rule_ind = 0; rule_ind < GRAMMAR_RULES_COUNT; ++rule_ind) {
+                        if (GRAMMAR_RULES[rule_ind].lhs == next_symbol) {
+                            Item new_item{rule_ind, 0};
+                            // добавляем и с нетерминалами в начале, эти пункты
+                            // замыкаются на следующих итерациях
+                            if (result.find(new_item) == result.end()) {
+                                new_items.insert(new_item);
+                                changed = true;
+                            }
                         }
                     }
                 }
             }
         }
+        result.insert(new_items.begin(), new_items.end());
     }
     return result;
 }
 
 
 // TODO: test
-ItemSet initial_set() {
+ItemSet compute_initial_items_set() {
     ItemSet I;
     for (size_t rule_ind = 0; rule_ind < GRAMMAR_RULES_COUNT; ++rule_ind) {
-        Rule& rule = GRAMMAR_RULES[rule_ind];
+        const Rule& rule = GRAMMAR_RULES[rule_ind];
         if (rule.length == 0) continue;
         I.insert({rule_ind, 0});
     }
+    return I;
 }
 
 ItemSet goto_items(const ItemSet& I, Symbol X) {
@@ -69,4 +78,16 @@ ItemSet goto_items(const ItemSet& I, Symbol X) {
         }
     }
     return moved;
+}
+
+void print_item(const Item& item) {
+    const Rule& rule = GRAMMAR_RULES[item.rule_id];
+    std::cout << symbol_name(rule.lhs) << " -> ";
+
+    for (size_t i = 0; i < rule.length; ++i) {
+        if (i == item.dot_pos) std::cout << "• ";
+        std::cout << symbol_name(rule.rhs[i]) << " ";
+    }
+    if (item.dot_pos == rule.length) std::cout << "• ";
+    std::cout << "\n";
 }

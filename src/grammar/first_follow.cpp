@@ -18,7 +18,7 @@ add_all(SymbolSet& destination,
 
 FirstSet create_first_set() {
     // FIRST для всех символов
-    FirstSet first;
+    FirstSet first = {};
     // Инициализация терминалов
     for (size_t i = NONTERMINAL_COUNT; i < SYMBOL_COUNT; ++i) {
         first[i].insert(static_cast<Symbol>(i));
@@ -40,11 +40,13 @@ FirstSet create_first_set() {
             changed |= add_all(first[lhs], first[first_sym]);
         }
     }
+    return first;
 }
 
 FollowSet create_follow_set(FirstSet first) {
 
     // Инициализация follow_sets
+    FollowSet follow_sets;
     for (auto& s : follow_sets) s.clear();
     follow_sets[nonterminal_index(START_SYMBOL)].insert(END_MARKER);
 
@@ -76,6 +78,7 @@ FollowSet create_follow_set(FirstSet first) {
             }
         }
     }
+    return follow_sets;
 }
 
 

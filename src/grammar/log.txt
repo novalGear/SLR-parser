@@ -1,0 +1,330 @@
+=== FIRST sets ===
+FIRST(E) = { LPAREN NUMBER VAR }
+FIRST(P) = { LPAREN NUMBER VAR }
+FIRST(T) = { LPAREN NUMBER VAR }
+FIRST(START) = { LPAREN NUMBER VAR }
+
+=== FOLLOW sets ===
+FOLLOW(E) = { PLUS MINUS RPAREN END_MARKER }
+FOLLOW(P) = { PLUS MINUS STAR SLASH RPAREN END_MARKER }
+FOLLOW(T) = { PLUS MINUS STAR SLASH RPAREN END_MARKER }
+FOLLOW(START) = { END_MARKER }
+
+build_states:46: State 1 ==========
+
+START -> E •
+E -> E • PLUS T
+E -> E • MINUS T
+
+build_states:46: State 2 ==========
+
+Transitions:
+  E -> 1
+  P -> 2
+  T -> 2
+  LPAREN -> 2
+  NUMBER -> 2
+  VAR -> 2
+
+build_states:46: State 3 ==========
+
+E -> E PLUS • T
+T -> • T STAR P
+T -> • T SLASH P
+T -> • P
+P -> • NUMBER
+P -> • VAR
+P -> • LPAREN E RPAREN
+build_states:46: State 4 ==========
+
+E -> E MINUS • T
+T -> • T STAR P
+T -> • T SLASH P
+T -> • P
+P -> • NUMBER
+P -> • VAR
+P -> • LPAREN E RPAREN
+Transitions:
+  MINUS -> 4
+build_states:46: State 5 ==========
+
+T -> P •
+build_states:46: State 6 ==========
+
+E -> E PLUS T •
+T -> T • STAR P
+T -> T • SLASH P
+build_states:46: State 7 ==========
+
+E -> • E PLUS T
+E -> • E MINUS T
+E -> • T
+T -> • T STAR P
+T -> • T SLASH P
+T -> • P
+P -> • NUMBER
+P -> • VAR
+P -> • LPAREN E RPAREN
+P -> LPAREN • E RPAREN
+build_states:46: State 8 ==========
+
+P -> NUMBER •
+Transitions:
+  NUMBER -> 8
+  VAR -> 2
+build_states:46: State 9 ==========
+
+E -> E MINUS T •
+T -> T • STAR P
+T -> T • SLASH P
+build_states:46: State 10 ==========
+
+P -> VAR •
+E -> E MINUS • T
+T -> • T STAR P
+T -> • T SLASH P
+T -> • P
+P -> • NUMBER
+P -> • VAR
+P -> • LPAREN E RPAREN
+Transitions:
+  P -> 5
+  T -> 9
+  LPAREN -> 7
+  NUMBER -> 8
+  VAR -> 10
+T -> P •
+build_states:46: State 11 ==========
+
+T -> T STAR • P
+P -> • NUMBER
+P -> • VAR
+P -> • LPAREN E RPAREN
+build_states:46: State 12 ==========
+
+T -> T SLASH • P
+P -> • NUMBER
+P -> • VAR
+P -> • LPAREN E RPAREN
+E -> E PLUS T •
+T -> T • STAR P
+T -> T • SLASH P
+Transitions:
+  STAR -> 11
+  SLASH -> 12
+build_states:46: State 13 ==========
+
+E -> E • PLUS T
+E -> E • MINUS T
+P -> LPAREN E • RPAREN
+build_states:46: State 14 ==========
+
+E -> T •
+T -> T • STAR P
+T -> T • SLASH P
+E -> • E PLUS T
+E -> • E MINUS T
+E -> • T
+T -> • T STAR P
+T -> • T SLASH P
+T -> • P
+P -> • NUMBER
+P -> • VAR
+P -> • LPAREN E RPAREN
+P -> LPAREN • E RPAREN
+Transitions:
+  E -> 13
+  P -> 5
+  T -> 14
+  LPAREN -> 7
+  NUMBER -> 8
+  VAR -> 10
+P -> NUMBER •
+E -> E MINUS T •
+T -> T • STAR P
+T -> T • SLASH P
+Transitions:
+  STAR -> 11
+  SLASH -> 12
+P -> VAR •
+build_states:46: State 15 ==========
+
+T -> T STAR P •
+T -> T STAR • P
+P -> • NUMBER
+P -> • VAR
+P -> • LPAREN E RPAREN
+Transitions:
+  P -> 15
+  LPAREN -> 7
+  NUMBER -> 8
+  VAR -> 10
+build_states:46: State 16 ==========
+
+T -> T SLASH P •
+Transitions:
+  P -> 16
+  LPAREN -> 2
+  NUMBER -> 2
+  VAR -> 2
+build_states:46: State 17 ==========
+
+P -> LPAREN E RPAREN •
+E -> E • PLUS T
+E -> E • MINUS T
+P -> LPAREN E • RPAREN
+Transitions:
+  PLUS -> 3
+  MINUS -> 4
+  RPAREN -> 17
+E -> T •
+T -> T • STAR P
+T -> T • SLASH P
+Transitions:
+  STAR -> 11
+  SLASH -> 12
+T -> T STAR P •
+T -> T SLASH P •
+P -> LPAREN E RPAREN •
+build:12: states built
+
+
+=== State 0 ===
+START -> • E
+E -> • E PLUS T
+E -> • E MINUS T
+E -> • T
+T -> • T STAR P
+T -> • T SLASH P
+T -> • P
+P -> • NUMBER
+P -> • VAR
+P -> • LPAREN E RPAREN
+
+=== State 1 ===
+START -> E •
+E -> E • PLUS T
+E -> E • MINUS T
+Transitions:
+  PLUS -> 3
+
+=== State 2 ===
+
+=== State 3 ===
+E -> E PLUS • T
+T -> • T STAR P
+T -> • T SLASH P
+T -> • P
+P -> • NUMBER
+P -> • VAR
+P -> • LPAREN E RPAREN
+Transitions:
+  P -> 5
+  T -> 6
+  LPAREN -> 7
+
+=== State 4 ===
+E -> E MINUS • T
+T -> • T STAR P
+T -> • T SLASH P
+T -> • P
+P -> • NUMBER
+P -> • VAR
+P -> • LPAREN E RPAREN
+Transitions:
+  P -> 5
+  T -> 9
+  LPAREN -> 7
+  NUMBER -> 8
+  VAR -> 10
+
+=== State 5 ===
+T -> P •
+
+=== State 6 ===
+E -> E PLUS T •
+T -> T • STAR P
+T -> T • SLASH P
+Transitions:
+  STAR -> 11
+  SLASH -> 12
+
+=== State 7 ===
+E -> • E PLUS T
+E -> • E MINUS T
+E -> • T
+T -> • T STAR P
+T -> • T SLASH P
+T -> • P
+P -> • NUMBER
+P -> • VAR
+P -> • LPAREN E RPAREN
+P -> LPAREN • E RPAREN
+Transitions:
+  E -> 13
+  P -> 5
+  T -> 14
+  LPAREN -> 7
+  NUMBER -> 8
+  VAR -> 10
+
+=== State 8 ===
+P -> NUMBER •
+
+=== State 9 ===
+E -> E MINUS T •
+T -> T • STAR P
+T -> T • SLASH P
+Transitions:
+  STAR -> 11
+  SLASH -> 12
+
+=== State 10 ===
+P -> VAR •
+
+=== State 11 ===
+T -> T STAR • P
+P -> • NUMBER
+P -> • VAR
+P -> • LPAREN E RPAREN
+Transitions:
+  P -> 15
+  LPAREN -> 7
+  NUMBER -> 8
+  VAR -> 10
+
+=== State 12 ===
+T -> T SLASH • P
+P -> • NUMBER
+P -> • VAR
+P -> • LPAREN E RPAREN
+
+=== State 13 ===
+E -> E • PLUS T
+E -> E • MINUS T
+P -> LPAREN E • RPAREN
+Transitions:
+  PLUS -> 3
+  MINUS -> 4
+  RPAREN -> 17
+
+=== State 14 ===
+E -> T •
+T -> T • STAR P
+T -> T • SLASH P
+Transitions:
+  STAR -> 11
+  SLASH -> 12
+
+=== State 15 ===
+T -> T STAR P •
+
+=== State 16 ===
+T -> T SLASH P •
+
+=== State 17 ===
+P -> LPAREN E RPAREN •
+fill_tables:79: next_symbol: 0
+terminate called after throwing an instance of 'std::out_of_range'
+  what():  map::at
+Aborted (core dumped)
