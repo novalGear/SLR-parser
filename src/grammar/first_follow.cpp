@@ -44,9 +44,9 @@ FirstSet create_first_set() {
 
 FollowSet create_follow_set(FirstSet first) {
 
-    // Инициализация follow
-    for (auto& s : follow) s.clear();
-    follow[nonterminal_index(START_SYMBOL)].insert(END_MARKER);
+    // Инициализация follow_sets
+    for (auto& s : follow_sets) s.clear();
+    follow_sets[nonterminal_index(START_SYMBOL)].insert(END_MARKER);
 
     bool changed = true;
     while(changed) {
@@ -61,7 +61,7 @@ FollowSet create_follow_set(FirstSet first) {
 
                 Symbol next = rule.rhs[sym_ind + 1];
                 changed |= add_all(
-                    follow[nonterminal_index(curr)],
+                    follow_sets[nonterminal_index(curr)],
                     first[static_cast<size_t>(next)]
                 );
             }
@@ -70,8 +70,8 @@ FollowSet create_follow_set(FirstSet first) {
             Symbol last = rule.rhs[rule.length - 1];
             if (not is_terminal(last)) {
                 changed |= add_all(
-                    follow[static_cast<size_t>(last)],
-                    follow[static_cast<size_t>(rule.lhs)]
+                    follow_sets[static_cast<size_t>(last)],
+                    follow_sets[static_cast<size_t>(rule.lhs)]
                 );
             }
         }
@@ -79,7 +79,7 @@ FollowSet create_follow_set(FirstSet first) {
 }
 
 
-void print_first_follow(FirstSet first, FollowSet follow) {
+void print_first_follow(FirstSet first, FollowSet follow_sets) {
     std::cout << "=== FIRST sets ===\n";
     for (size_t i = 0; i < NONTERMINAL_COUNT; ++i) {
         Symbol nt = static_cast<Symbol>(i);
@@ -94,7 +94,7 @@ void print_first_follow(FirstSet first, FollowSet follow) {
     for (size_t i = 0; i < NONTERMINAL_COUNT; ++i) {
         Symbol nt = static_cast<Symbol>(i);
         std::cout << "FOLLOW(" << SYMBOL_NAMES[i] << ") = { ";
-        for (Symbol s : follow[i]) {
+        for (Symbol s : follow_sets[i]) {
             std::cout << SYMBOL_NAMES[static_cast<size_t>(s)] << " ";
         }
         std::cout << "}\n";

@@ -1,63 +1,40 @@
 #include "slr_parser.hpp"
+#include "table_builder.hpp"
 #include "first_follow.hpp"
+
+int SLR_Parser::init() {
+    build_tables();
+    return 0;
+}
 
 int SLR_Parser::build_tables() {
     FirstSet first = create_first_set();
-    FollowSet follow = create_follow_set(first);
-    print_first_follow(first, follow);
+    FollowSet follow_sets = create_follow_set(first);
+    print_first_follow(first, follow_sets);
 
-    std::map<ItemSet, size_t> states_to_id = build_states();
-    fill_tables(states_to_id);
+    TableBuilder builder;
+    builder.build(first, follow_sets);
+
+    states_         = builder.take_states();
+    action_table_   = builder.take_action_table();
+    goto_table_     = builder.take_goto_table();
+    return 0;
 }
 
-std::set<Symbol> get_next_symbols(const ItemSet& item_set) {
-    std::set<Symbol> result;
-    for (const Item& item : item_set) {
-        if (!is_complete(item)) {
-            result.insert(symbol_after_dot(item));
-        }
+
+const Action& SLR_Parser::get_action(size_t state, Symbol terminal) const {
+    int t_idx = terminal_index(terminal);
+    if (t_idx == -1 || state >= action_table_.size()) {
+        static Action error{ActionType::ERROR, 0};
+        return error;
     }
-    return result;
+    return action_table_[state][t_idx];
 }
 
-SLR_Parser::build_states() {
-
-    std::vector<ItemSet> states;
-    std::<ItemSet, size_t> states_to_id;
-
-    ItemSet initial = initial_set();
-    states.push_back(initial);
-    state_to_id[initial] = 0;
-
-    std::queue<size_t> q;
-    q.push(0);
-
-    // добавляем все получаемые состояния в очередь,
-    // на каждой итерации while работаем с одним состоянием
-
-    while(!q.empty()) {
-        size_t state_id = q.front(); q.pop();
-        const State& I = states[state_id];
-        std::set<Symbol> goto_terminals = get_next_symbols(state);
-
-        for (Symbol sym : goto_terminals) {
-
-            ItemSet new_set = closure(goto_items(state.items, sym));
-
-            if (auto it = state_to_id.find(new_set); it == states_to_id.end()) {
-                size_t new_set_id = states.size();
-                states.push_back(new_set);
-                states_to_id[new_set] = new_set_id;
-                q.push();
-            }
-
-
-        }
+int SLR_Parser::get_goto(size_t state, Symbol nonterminal) const {
+    int nt_idx = nonterminal_index(nonterminal);
+    if (nt_idx == -1 || state >= goto_table_.size()) {
+        return -1;
     }
-
-    return states_to_id;
-}
-
-int SLR_Parser(std::map<ItemSet, size_t>& states_to_id) {
-
+    return goto_table_[state][nt_idx];
 }

@@ -1,6 +1,9 @@
 #pragma once
 
 #include "item.hpp"
+#include "first_follow.hpp"
+#include <vector>
+#include <map>
 
 enum class SLR_Error {
     NONE,
@@ -21,6 +24,12 @@ struct Action {
     size_t value;
 };
 
+struct State {
+    ItemSet items;                          // набор пунктов состояния
+    std::map<Symbol, size_t> transitions;   // X -> next_state_id
+};
+
+
 // [state][terminal]
 using ActionTable = std::vector<std::vector<Action>>;
 
@@ -35,37 +44,24 @@ public:
     int init();
 
     // интерфейс парсера
-    const Action& get_action(int state, Symbol terminal) const;
-    int get_goto(int state, Symbol nonterminal) const;
-
-    int action(ItemSet state, Symbol symbol);
-    int goto_state(ItemSet state, Symbol nonterminal);
+    // const Action& get_action(int state, Symbol terminal) const;
+    // int get_goto(int state, Symbol nonterminal) const;
 
     // debug
-    SLR_ERROR get_last_error();
-    void dump_tables();
+    // SLR_Error get_last_error();
+    // void dump_tables();
 
 private:
     // ожидается релиз:
     // стэк состояний
     // входная строка
     //
-
-
-    struct State {
-        ItemSet items;
-        int id;
-    };
-
-    ActionTable action_table;
-    GotoTable   goto_table;
-
-    std::set<Symbol> get_next_symbols(const ItemSet& item_set);
-
-    ItemSet closure(const ItemSet& I);
-    ItemSet goto_items(const ItemSet& I, Symbol X);
+    std::vector<State> states_;
+    ActionTable action_table_;
+    GotoTable   goto_table_;
 
     int build_dfa();
     int build_tables();
-    SLR_ERROR errno;
+
+    SLR_Error errno;
 };

@@ -13,7 +13,16 @@ bool is_complete(const Item& item) {
     return item.dot_pos == GRAMMAR_RULES[item.rule_id].length;
 }
 
-using ItemSet = std::set<Item>;
+std::set<Symbol> get_next_symbols(const ItemSet& item_set) {
+    std::set<Symbol> result;
+    for (const Item& item : item_set) {
+        if (!is_complete(item)) {
+            result.insert(symbol_after_dot(item));
+        }
+    }
+    return result;
+}
+
 
 ItemSet closure(const ItemSet& I) {
     ItemSet result = I;
@@ -51,11 +60,6 @@ ItemSet initial_set() {
         I.insert({rule_ind, 0});
     }
 }
-
-// TODO: test
-ItemSet complete_set() {
-    return closure(initial_set());
-};
 
 ItemSet goto_items(const ItemSet& I, Symbol X) {
     ItemSet moved;

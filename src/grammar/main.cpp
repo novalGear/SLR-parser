@@ -1,10 +1,8 @@
-#include "first_follow.hpp"
+#include "slr_parser.hpp"
 
 int main() {
-    create_first_set();
-    create_follow_set();
-    print_first_follow();
-
+    SLR_Parser parser;
+    parser.init();
 
     return 0;
 }

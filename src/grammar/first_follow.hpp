@@ -12,6 +12,6 @@ using FollowSet = std::array<SymbolSet, NONTERMINAL_COUNT>;
 
 FirstSet create_first_set();
 FollowSet create_follow_set(FirstSet first);
-void print_first_follow(FirstSet first, FollowSet follow); // для отладки
+void print_first_follow(FirstSet first, FollowSet follow_sets); // для отладки
 
 #endif
