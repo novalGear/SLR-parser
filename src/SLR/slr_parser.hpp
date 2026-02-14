@@ -1,31 +1,72 @@
 #pragma once
 
-class SLR_parser {
-public:
-    // Конструктор: принимает входной поток (например, std::cin или ifstream)
-    explicit SLRParser(std::istream& input);
+#include "../grammar/item.hpp"
+#include "../grammar/first_follow.hpp"
+#include <vector>
+#include <map>
+#include <string>
 
-    // Запуск разбора
-    void parse();
+enum class SLR_Error {
+    NONE,
+    SHIFT_REDUCE_CONFLICT,
+    REDUCE_REDUCE_CONFLICT,
+};
+
+enum class ActionType {
+    SHIFT,
+    REDUCE,
+    ACCEPT,
+    ERROR
+};
+
+struct Action {
+    ActionType type;
+    // SHIFT: номер состояния, REDUCE: номер грамматического правила
+    int value;
+};
+
+struct State {
+    ItemSet items;                          // набор пунктов состояния
+    std::map<Symbol, size_t> transitions;   // X -> next_state_id
+};
+
+
+// [state][terminal]
+using ActionTable = std::vector<std::vector<Action>>;
+
+// [state][nonterminal]
+using GotoTable = std::vector<std::vector<int>>;
+
+std::string format_action(const Action& act);
+
+class SLR_Parser {
+public:
+    SLR_Parser() = default;
+
+    // построение таблиц
+    int init();
+
+    // интерфейс парсера
+    const Action& get_action(size_t state, Symbol terminal) const;
+    int get_goto(size_t state, Symbol nonterminal) const;
+
+    // debug
+
+    void dump_action_table_csv(const std::string& filename) const;
+    // SLR_Error get_last_error();
+    // void dump_tables();
 
 private:
-    std::istream& input_stream_;            // Входной поток
-    Token current_token_;                   // Текущий токен (после вызова next_token())
-    std::vector<int> state_stack_;          // Стек состояний (для SLR — стек номеров состояний DFA)
-    std::vector<Token> symbol_stack_;       // Стек символов (нетерминалы/терминалы — опционально, если строите AST)
+    // ожидается релиз:
+    // стэк состояний
+    // входная строка
+    //
+    // std::vector<State> states_;
+    ActionTable action_table_;
+    GotoTable   goto_table_;
 
-    // Чтение следующего токена из input_stream_
-    void next_token();
+    int build_dfa();
+    int build_tables();
 
-    // Операции автомата
-    void shift(int next_state);
-    void reduce(int rule_index);
-    void accept();
-    void error(const char* message);
-    void warning(const char* message);
-
-    // Вспомогательные методы
-    int current_state() const;  // вершина state_stack_
-    bool is_eof() const;
+    SLR_Error errno;
 };
-}

@@ -1,22 +1,15 @@
-cmake_minimum_required(VERSION 3.14)
-project(SLR_Grammar LANGUAGES CXX)
-
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-add_executable(grammar_test
-    main.cpp
+# Библиотека с грамматикой и first/follow
+add_library(grammar
     first_follow.cpp
     items.cpp
-    slr_parser.cpp
     symbol_utils.cpp
-    table_builder.cpp
     generated/grammar_rules.cpp
 )
 
-target_include_directories(grammar_test PRIVATE
+target_include_directories(grammar PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/generated
 )
 
-target_compile_definitions(grammar_test PRIVATE $<$<CONFIG:Debug>:DEBUG>)
+# Опционально: для отладки
+target_compile_definitions(grammar PRIVATE $<$<CONFIG:Debug>:DEBUG>)

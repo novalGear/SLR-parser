@@ -1,7 +1,7 @@
 #include "slr_parser.hpp"
-#include "symbol_utils.hpp"
 #include "table_builder.hpp"
-#include "first_follow.hpp"
+#include "../grammar/symbol_utils.hpp"
+#include "../grammar/first_follow.hpp"
 
 #include <fstream>
 

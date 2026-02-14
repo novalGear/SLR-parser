@@ -1,7 +1,7 @@
 #include "table_builder.hpp"
-#include "symbol_utils.hpp"
-#include "rule.hpp"
-#include "dbg_utils.hpp"
+#include "../grammar/symbol_utils.hpp"
+#include "../grammar/rule.hpp"
+#include "../grammar/dbg_utils.hpp"
 
 #include <nlohmann/json.hpp>
 #include <fstream>

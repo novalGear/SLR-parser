@@ -1,6 +1,6 @@
 #pragma once
 
-#include "first_follow.hpp"
+#include "../grammar/first_follow.hpp"
 #include "slr_parser.hpp"
 
 class TableBuilder {
