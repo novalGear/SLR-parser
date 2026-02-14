@@ -4,6 +4,7 @@
 #include "first_follow.hpp"
 #include <vector>
 #include <map>
+#include <string>
 
 enum class SLR_Error {
     NONE,
@@ -36,6 +37,8 @@ using ActionTable = std::vector<std::vector<Action>>;
 // [state][nonterminal]
 using GotoTable = std::vector<std::vector<int>>;
 
+std::string format_action(const Action& act);
+
 class SLR_Parser {
 public:
     SLR_Parser() = default;
@@ -48,6 +51,8 @@ public:
     int get_goto(size_t state, Symbol nonterminal) const;
 
     // debug
+
+    void dump_action_table_csv(const std::string& filename) const;
     // SLR_Error get_last_error();
     // void dump_tables();
 

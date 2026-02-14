@@ -29,6 +29,8 @@ private:
 
     // отладка
     void dump_states() const;
+    void dump_states_dot(const std::string& filename) const;
+    void dump_states_json(const std::string& filename) const;
 };
 
 void dump_state(const State& state);

@@ -91,3 +91,16 @@ void print_item(const Item& item) {
     if (item.dot_pos == rule.length) std::cout << "• ";
     std::cout << "\n";
 }
+
+std::string format_item(const Item& item) {
+    const Rule& rule = GRAMMAR_RULES[item.rule_id];
+    std::string result = std::string(symbol_name(rule.lhs)) + " -> ";
+
+    for (size_t i = 0; i < rule.length; ++i) {
+        if (i == item.dot_pos) result += "• ";
+        result += std::string(symbol_name(rule.rhs[i])) + " ";
+    }
+    if (item.dot_pos == rule.length) result += "• ";
+
+    return result;
+}

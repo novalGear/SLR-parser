@@ -3,14 +3,19 @@
 #include "rule.hpp"
 #include "dbg_utils.hpp"
 
+#include <nlohmann/json.hpp>
+#include <fstream>
 #include <iostream>
 #include <cassert>
 #include <queue>
+#include <string>
 
 void TableBuilder::build(const FollowSet& follow_sets) {
     build_states();
     DBG_PRINT("states built\n");
     dump_states();
+    dump_states_dot("./data/states.dot");
+    dump_states_json("./data/states.json");
     fill_tables(follow_sets);
 }
 
@@ -167,4 +172,71 @@ void TableBuilder::dump_states() const {
         dump_state(states_[i]);
     }
 }
+// В table_builder.cpp
+void TableBuilder::dump_states_dot(const std::string& filename) const {
+    std::ofstream file(filename);
+    file << "digraph LR_Automaton {\n";
+    file << "    rankdir=LR;\n";
+    file << "    splines=ortho;\n";
+    file << "    nodesep=0.6;\n";
+    file << "    ranksep=1.2;\n";
+    file << "    node [shape=box, style=filled, fillcolor=\"#f0f0f0\", fontname=\"Courier\"];\n";
+    file << "    edge [fontname=\"Courier\", fontsize=10];\n";
 
+    // Состояния
+    for (size_t i = 0; i < states_.size(); ++i) {
+        std::string label = "\"" + std::to_string(i) + "\\l";
+        for (const Item& item : states_[i].items) {
+            label += format_item(item) + "\\l";
+        }
+        label += "\"";
+        file << "    " << i << " [label=" << label << "];\n";
+    }
+
+    // Переходы
+    for (size_t i = 0; i < states_.size(); ++i) {
+        for (const auto& [sym, target] : states_[i].transitions) {
+            std::string color = is_terminal(sym) ? "blue" : "black";
+            file << "    " << i << " -> " << target
+                 << " [label=\"" << symbol_name(sym)
+                 << "\", color=\"" << color << "\"];\n";
+        }
+    }
+    file << "}\n";
+}
+void TableBuilder::dump_states_json(const std::string& filename) const {
+    nlohmann::json j;
+    j["nodes"] = nlohmann::json::array();
+    j["links"] = nlohmann::json::array();
+
+    // Состояния
+    for (size_t i = 0; i < states_.size(); ++i) {
+        // Собираем все пункты в одну строку с \n
+        std::string label;
+        for (const Item& item : states_[i].items) {
+            label += format_item(item) + "\n";
+        }
+        if (!label.empty()) {
+            label.pop_back(); // удаляем последний \n
+        }
+
+        nlohmann::json node;
+        node["id"] = std::to_string(i);      // ← строка!
+        node["label"] = label;               // ← одна строка
+        j["nodes"].push_back(node);
+    }
+
+    // Рёбра
+    for (size_t i = 0; i < states_.size(); ++i) {
+        for (const auto& [sym, target] : states_[i].transitions) {
+            nlohmann::json link;
+            link["source"] = std::to_string(i);        // ← строка!
+            link["target"] = std::to_string(target);   // ← строка!
+            link["label"] = symbol_name(sym);
+            j["links"].push_back(link);
+        }
+    }
+
+    std::ofstream file(filename);
+    file << j.dump(2);
+}

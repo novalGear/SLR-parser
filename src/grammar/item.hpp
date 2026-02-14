@@ -2,6 +2,7 @@
 #include "generated/symbol_enums.hpp"
 
 #include <set>
+#include <string>
 
 struct Item {
     std::size_t rule_id;        // индекс правила в GRAMMAR_RULES
@@ -28,3 +29,4 @@ ItemSet goto_items(const ItemSet& I, Symbol X);
 
 // отладка
 void print_item(const Item& item);
+std::string format_item(const Item& item);
