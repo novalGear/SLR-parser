@@ -1,5 +1,4 @@
-# Библиотека с грамматикой и first/follow
-add_library(grammar
+add_library(grammar STATIC
     first_follow.cpp
     items.cpp
     symbol_utils.cpp
@@ -11,5 +10,4 @@ target_include_directories(grammar PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/generated
 )
 
-# Опционально: для отладки
 target_compile_definitions(grammar PRIVATE $<$<CONFIG:Debug>:DEBUG>)

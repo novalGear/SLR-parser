@@ -48,7 +48,7 @@ FollowSet create_follow_set(FirstSet first) {
     // Инициализация follow_sets
     FollowSet follow_sets;
     for (auto& s : follow_sets) s.clear();
-    follow_sets[nonterminal_index(START_SYMBOL)].insert(END_MARKER);
+    follow_sets[nonterminal_index(Symbol::START)].insert(Symbol::END_MARKER);
 
     bool changed = true;
     while(changed) {

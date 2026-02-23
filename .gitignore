@@ -1,3 +1,4 @@
 /app
 /src/grammar/build
 /build
+/src/lexer/build

@@ -89,7 +89,7 @@ void TableBuilder::fill_tables(const FollowSet& follow_sets) {
         for (const Item& item : states_[state_id].items) {
             if (is_complete(item)) {
                 const Rule& rule = GRAMMAR_RULES[item.rule_id];
-                if (rule.lhs == START_SYMBOL) {
+                if (rule.lhs == Symbol::START) {
                     add_accept(state_id);
                 } else {
                     add_reduce(state_id, follow_sets, item);
@@ -109,7 +109,7 @@ void TableBuilder::fill_tables(const FollowSet& follow_sets) {
 }
 
 void TableBuilder::add_accept(size_t state_id) {
-    int t_idx = terminal_index(END_MARKER);
+    int t_idx = terminal_index(Symbol::END_MARKER);
     assert(t_idx != -1);
     action_table_[state_id][t_idx] = {ActionType::ACCEPT, 0};
 }
