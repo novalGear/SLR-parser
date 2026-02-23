@@ -2,3 +2,4 @@
 /src/grammar/build
 /build
 /src/lexer/build
+compile_commands.json
