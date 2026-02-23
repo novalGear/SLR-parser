@@ -59,11 +59,11 @@ Action parse_action(const std::string& str) {
     }
     if (str[0] == 'S') {
         size_t value = std::stoul(str.substr(1));
-        return {ActionType::SHIFT, value};
+        return {ActionType::SHIFT, static_cast<int>(value)};
     }
     if (str[0] == 'R') {
         size_t value = std::stoul(str.substr(1));
-        return {ActionType::REDUCE, value};
+        return {ActionType::REDUCE, static_cast<int>(value)};
     }
     return {ActionType::ERROR, -1};
 }

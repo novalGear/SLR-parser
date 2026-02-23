@@ -36,23 +36,9 @@ void TableBuilder::build_states() {
         std::set<Symbol> successor_symbols = get_next_symbols(states_[state_id].items);
 
         for (Symbol symbol : successor_symbols) {
-            // DBG_PRINT("\n\ncurrent state print in for cycle (symbol = %s):\n",
-            //             symbol_name(symbol));
-            // dump_state(states_[state_id]);
-            // DBG_PRINT("\n\ndump states_[0]");
-            // dump_state(states_[0]);
 
             ItemSet goto_items_res = goto_items(states_[state_id].items, symbol);
-            // DBG_PRINT("\ngoto items (%d, %s):\n", static_cast<int>(symbol), symbol_name(symbol));
-            // for (const Item& item : goto_items_res) {
-            //     print_item(item);
-            // }
-
             ItemSet target_items = closure(goto_items_res);
-            // DBG_PRINT("\nclosure:\n");
-            // for (const Item& item : target_items) {
-            //     print_item(item);
-            // }
 
             auto it = state_to_id_.find(target_items);
             if (it == state_to_id_.end()) {
@@ -62,19 +48,10 @@ void TableBuilder::build_states() {
                 state_to_id_[target_items] = new_state_id;
                 states_[state_id].transitions[symbol] = new_state_id;
                 q.push(new_state_id);
-
-                // DBG_PRINT("State %ld ==========\n", new_state_id);
-                // for (const Item& item : target_items) {
-                //     print_item(item);
-                // }
-
-
             } else {
                 // уже существующее состояние
                 states_[state_id].transitions[symbol] = it->second;
             }
-            // DBG_PRINT("current state (%ld) transitions:\n", state_id);
-            // dump_state(states_[state_id]);
         }
     }
 }
@@ -96,7 +73,7 @@ void TableBuilder::fill_tables(const FollowSet& follow_sets) {
                 }
             } else {
                 Symbol next_symbol = symbol_after_dot(item);
-                DBG_PRINT("next_symbol: %d", static_cast<int>(next_symbol));
+
                 size_t next_state_id = states_[state_id].transitions.at(next_symbol);
                 if (is_terminal(next_symbol)) {
                     add_shift(state_id, next_symbol, next_state_id);
@@ -152,12 +129,9 @@ void TableBuilder::add_goto(size_t state_id, Symbol sym, size_t next_state_id) {
 }
 
 void dump_state(const State& state) {
-    // Печать всех пунктов
     for (const Item& item : state.items) {
         print_item(item);
     }
-
-    // Печать переходов
     if (!state.transitions.empty()) {
         std::cout << "Transitions:\n";
         for (const auto& [symbol, target] : state.transitions) {
@@ -172,7 +146,7 @@ void TableBuilder::dump_states() const {
         dump_state(states_[i]);
     }
 }
-// В table_builder.cpp
+
 void TableBuilder::dump_states_dot(const std::string& filename) const {
     std::ofstream file(filename);
     file << "digraph LR_Automaton {\n";
